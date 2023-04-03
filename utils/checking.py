@@ -1,4 +1,6 @@
 """Методы для проверки статус кодов"""
+import json
+
 from requests import Response
 
 
@@ -13,5 +15,30 @@ class Checking():
         else:
             print("Ошибка. Статус код = " + str(response.status_code))
 
+    """Метод для проверки обязательных ключей в ответе"""
+    @staticmethod
+    def check_json_token(response: Response, expected_value):
+        token = json.loads(response.text)
+        assert list(token) == expected_value
+        print("Все поля присутствуют")
 
 
+    """Метод для проверки значений обязательных полей в ответе"""
+
+    @staticmethod
+    def check_json_value(response: Response, field_name, expected_value):
+        check = response.json()
+        check_info = check.get(field_name)
+        assert check_info == expected_value
+        print(field_name + " верен")
+
+    """Метод для проверки значений обязательных полей в ответе по заданному слову"""
+
+    @staticmethod
+    def check_json_search_word_in_value(response: Response, field_name, search_word):
+        check = response.json()
+        check_info = check.get(field_name)
+        if search_word in check_info:
+            print("Слово " + search_word + " присутствует")
+        else:
+            print("Слово " + search_word + " отсутствует")
